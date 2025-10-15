@@ -1,9 +1,10 @@
 import redis
 import json
 from typing import List, Dict
-
+import os
 # Connect to Redis (assuming default localhost:6379)
-r = redis.Redis(decode_responses=True)
+REDIS_URL = os.getenv("REDIS_URL", "redis://localhost:6379") # Reads environment variable, defaults to localhost for local testing
+r = redis.from_url(REDIS_URL, decode_responses=True)
 
 # Configuration: Store the last 6 messages for context
 MAX_CONTEXT_MESSAGES = 6
