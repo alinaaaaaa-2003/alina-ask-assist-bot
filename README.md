@@ -13,12 +13,29 @@ The **Ask Alina Bot** is a production-ready solution that simulates a customer s
 
 This project showcases expertise in building scalable, reliable, and intelligent systems, with a focus on advanced LLM techniques.
 
+## **✨ Project Demo & Visuals**
+
+This project demonstrates the full application architecture, from the clean frontend UI to the critical backend logic (Escalation and De-escalation).
+
+### **1. Live Chat Interface**
+
+The user-facing chat window, built using HTML/JavaScript:
+
+![Alina Bot Chat Interface](assets/demo1.png)
+
+### **2. Escalation Logic Proof**
+
+The output below shows the guaranteed structured handoff, which verifies the success of the Gemini Tool Calling implementation.
+
+![Alina Bot Escalation Proof](assets/demo2.png)
+
 ### **🔗 Live Application & API Access**
 
 | Service | Status | Link |
 | :--- | :--- | :--- |
 | **Frontend Demo** | Live | [Launch Chat](https://alinaaaaaa-2003.github.io/alina-ask-assist-bot/) |
 | **Backend API Docs** | Live | [Test Endpoints](https://alina-ask-assist-bot.onrender.com/docs) |
+
 
 ## **⭐ Key Features for Recruiters (The Differentiators)**
 
