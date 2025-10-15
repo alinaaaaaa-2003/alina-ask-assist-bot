@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ask Alina | Unthinkable Support</title>
+    <style>
+        /* Modernized Styles */
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; background-color: #eef2f7; margin: 0; }
+        
+        .chat-container { 
+            width: 100%; max-width: 420px; 
+            background: white; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15); 
+            border-radius: 12px; 
+            overflow: hidden; 
+            display: flex; flex-direction: column; 
+            height: 85vh; 
+        }
+        
+        /* Header Styling */
+        .chat-header { 
+            background-color: #1a237e; /* Deep Indigo */
+            background-image: linear-gradient(135deg, #1a237e 0%, #303f9f 100%);
+            color: white; 
+            padding: 15px 15px; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center;
+            border-bottom: 3px solid #7986cb;
+        }
+        .header-title {
+            display: flex;
+            flex-direction: column;
+            text-align: left; 
+            font-size: 1.5em; 
+            font-weight: 700;
+        }
+        .header-title span { 
+            font-weight: 400; 
+            font-size: 0.5em; 
+            opacity: 0.9;
+            margin-top: 2px;
+        }
+
+        /* Reset Button Style */
+        #reset-button {
+            background-color: transparent;
+            color: #d1c4e9; 
+            border: 1px solid #d1c4e9;
+            padding: 5px 12px;
+            border-radius: 15px;
+            font-size: 0.8em;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        #reset-button:hover {
+            background-color: #4a589f;
+        }
+        
+        /* Status Bar Styling */
+        .status-bar { 
+            padding: 8px 15px; font-size: 0.8em; 
+            display: flex; align-items: center; 
+            justify-content: flex-start; 
+            background-color: #f1f4f9; 
+            color: #555;
+        }
+        .status-dot { height: 8px; width: 8px; border-radius: 50%; margin-right: 8px; border: 1px solid #fff; }
+        .status-dot.online { background-color: #4CAF50; box-shadow: 0 0 5px #4CAF50; }
+        .status-dot.offline { background-color: #f44336; }
+
+        /* Chat Box & Message Styling */
+        .chat-box { flex-grow: 1; padding: 20px 15px; overflow-y: auto; background-color: #fcfcfc; }
+        .message { margin-bottom: 15px; display: flex; }
+        
+        .user-message { justify-content: flex-end; }
+        .user-message .content { 
+            background-color: #007bff; 
+            color: white; 
+            border-radius: 18px 18px 4px 18px; 
+        }
+        
+        .bot-message .content { 
+            background-color: #e0e7ff; 
+            color: #1a237e; 
+            border-radius: 18px 18px 18px 4px; 
+            border: none;
+            font-size: 0.95em;
+        }
+        
+        .message .content { padding: 10px 15px; max-width: 80%; box-shadow: 0 1px 3px rgba(0,0,0,0.1); white-space: pre-wrap; }
+        
+        /* Style for the Escalation Message */
+        .escalated-message .content {
+            background-color: #ffcdd2; 
+            color: #b71c1c; 
+            border: 2px solid #ef9a9a; 
+            font-weight: 600;
+            font-size: 0.9em;
+            line-height: 1.4;
+        }
+
+        /* Input Styling */
+        .chat-input { display: flex; padding: 15px 10px; border-top: 1px solid #eee; background-color: #ffffff; }
+        .chat-input input { flex-grow: 1; padding: 12px; border: 1px solid #ddd; border-radius: 25px; margin-right: 10px; font-size: 1em; }
+        .chat-input button { 
+            background-color: #3f51b5; 
+            color: white; 
+            border: none; 
+            padding: 10px 20px; 
+            border-radius: 25px; 
+            cursor: pointer; 
+            font-weight: 600;
+            transition: background-color 0.3s; 
+        }
+        .chat-input button:hover { background-color: #303f9f; }
+    </style>
+</head>
+<body>
+    <div class="chat-container">
+        <div class="chat-header">
+            <div class="header-title">Ask Alina <span>AI Customer Support for Unthinkable</span></div>
+            <button id="reset-button">Reset Chat</button>
+        </div>
+        
+        <div class="status-bar">
+            <span id="status-dot" class="status-dot offline"></span>
+            <span id="status-text">Connecting to Backend...</span>
+        </div>
+        
+        <div class="chat-box" id="chat-box">
+            <div class="message bot-message">
+                <div class="content">Hello! I am Alina, your AI support agent for Unthinkable. How can I assist you today?</div>
+            </div>
+        </div>
+        <div class="chat-input">
+            <input type="text" id="user-input" placeholder="Type your message..." autocomplete="off">
+            <button id="send-button">Send</button>
+        </div>
+    </div>
+
+    <script>
+        const chatBox = document.getElementById('chat-box');
+        const userInput = document.getElementById('user-input');
+        const sendButton = document.getElementById('send-button');
+        const statusDot = document.getElementById('status-dot');
+        const statusText = document.getElementById('status-text');
+        const resetBtn = document.getElementById('reset-button');
+        
+        let sessionId = localStorage.getItem('alinaSessionId') || generateUUID();
+        
+        // --- 1. Dynamic API URL Setup (FINAL LIVE LINK) ---
+        
+        // **ACTION: This link must be updated to your live Render/GCP deployment URL.**
+        const LIVE_API_URL = 'https://alina-bot-api-live.onrender.com';
+        const LOCAL_API_URL = 'http://127.0.0.1:8000';
+        
+        const API_BASE = window.location.protocol.startsWith('http') && window.location.hostname !== 'localhost' 
+                         ? LIVE_API_URL 
+                         : LOCAL_API_URL;
+        
+        // --- Status Management Functions ---
+        
+        function setStatus(isOnline, text) {
+            statusDot.className = `status-dot ${isOnline ? 'online' : 'offline'}`;
+            statusText.innerText = text;
+        }
+
+        async function checkBackendStatus() {
+            try {
+                const response = await fetch(`${API_BASE}/health`);
+                if (response.ok) {
+                    setStatus(true, "API Service Online. Ready to chat.");
+                } else {
+                    setStatus(false, "Backend found, but returned an error. Check server logs.");
+                }
+            } catch (error) {
+                setStatus(false, `Connection Failed. Ensure FastAPI is running at ${API_BASE}`);
+            }
+        }
+
+        function scrollToBottom() {
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+        
+        // --- Core Utility Functions ---
+
+        function generateUUID() {
+            return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+                var r = Math.random() * 16 | 0, v = c === 'x' ? r : (r & 0x3 | 0x8);
+                return v.toString(16);
+            });
+        }
+
+        function appendMessage(sender, text, isEscalated = false) {
+            const messageDiv = document.createElement('div');
+            messageDiv.classList.add('message', sender === 'user' ? 'user-message' : 'bot-message');
+            
+            const contentDiv = document.createElement('div');
+            contentDiv.classList.add('content');
+            
+            if (isEscalated) {
+                messageDiv.classList.add('escalated-message');
+                contentDiv.innerHTML = `<strong>🚨 ESCALATION TRIGGERED 🚨</strong><br><br>${text}`;
+            } else {
+                contentDiv.innerText = text;
+            }
+            
+            messageDiv.appendChild(contentDiv);
+            chatBox.appendChild(messageDiv);
+            
+            scrollToBottom(); 
+        }
+        
+        // --- Reset Logic Function ---
+        function resetConversation() {
+            localStorage.removeItem('alinaSessionId');
+            alert("Starting a new clean chat session.");
+            window.location.reload(); 
+        }
+
+        // --- Main API Communication Function ---
+
+        async function sendMessage() {
+            const query = userInput.value.trim();
+            if (!query) return;
+
+            // 1. Display user message immediately
+            appendMessage('user', query);
+            userInput.value = '';
+            sendButton.disabled = true; 
+            userInput.placeholder = "Processing...";
+            setStatus(statusDot.classList.contains('online'), "Processing request...");
+
+
+            try {
+                const response = await fetch(`${API_BASE}/api/chat`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'accept': 'application/json' },
+                    body: JSON.stringify({ query: query, session_id: sessionId })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`API returned status ${response.status}`);
+                }
+
+                const data = await response.json();
+                
+                // 2. Update Session ID
+                sessionId = data.session_id;
+                localStorage.setItem('alinaSessionId', sessionId);
+
+                // 3. Display the bot's response
+                appendMessage('bot', data.response, data.is_escalated);
+
+            } catch (error) {
+                console.error("API Error:", error);
+                appendMessage('bot', `Could not reach the server at ${API_BASE}. Check console for details.`, true);
+            } finally {
+                sendButton.disabled = false;
+                userInput.placeholder = "Type your message...";
+                userInput.focus();
+                checkBackendStatus(); 
+            }
+        }
+
+        // --- Event Listeners and Initial Setup ---
+        
+        checkBackendStatus(); // Check connectivity as soon as the page loads
+        scrollToBottom();     // Ensure the initial welcome message is visible on load
+
+        sendButton.addEventListener('click', sendMessage);
+        userInput.addEventListener('keypress', function(event) {
+            if (event.key === 'Enter') {
+                sendMessage();
+            }
+        });
+        
+        resetBtn.addEventListener('click', resetConversation);
+    </script>
+</body>
+</html>
