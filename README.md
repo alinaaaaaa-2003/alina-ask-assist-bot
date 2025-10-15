@@ -29,6 +29,16 @@ The output below shows the guaranteed structured handoff, which verifies the suc
 
 ![Alina Bot Escalation Proof](assets/demo2.png)
 
+### 🎬 Full Demo Video 
+
+The video demonstrates the project's **Contextual De-escalation Logic** and **Gemini Tool Calling** architecture.
+
+| Element | Link |
+| :--- | :--- |
+| **Video Demonstration** | [View Full Demo](https://drive.google.com/file/d/1_0eEAUK56U5mWAas-QL6w6pz1UFiNgxr/view?usp=sharing) |
+
+---
+
 ### **🔗 Live Application & API Access**
 
 | Service | Status | Link |
