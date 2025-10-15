@@ -14,6 +14,8 @@ app = FastAPI(
     description="Backend API with Redis session management and Gemini-driven escalation."
 )
 origins = [
+    "https://alina-ask-assist-bot.onrender.com"
+    "https://alinaaaaaa-2003.github.io",
     "http://localhost",
     "http://localhost:8000",
     "null", # Essential for allowing local file system access (file:///index.html)
